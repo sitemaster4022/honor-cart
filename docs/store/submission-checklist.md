@@ -20,6 +20,7 @@
 - Store URLs replaced with the live `honorcart.com` routes
 - Global kill switch enforced in both popup state and backend activation
 - Referral protection retained across supported same-merchant navigation and short tracking redirects
+- Two current 640×400 Chrome listing screenshots covering coupon lookup and referral stand-down
 
 ## Required owner/deployment inputs before submission
 
@@ -29,7 +30,7 @@
 - Document any Cloudflare dashboard log-retention setting used by the production account.
 - Obtain written approval for at least one merchant/network test integration.
 - Replace the stub coupon and affiliate adapters with approved production adapters.
-- Capture at least one current, accurate 1280×800 store screenshot from the production build (Chrome allows up to five; Edge up to six).
+- Compare the supplied screenshots against the final unpacked build and capture the onboarding disclosure as an optional third screenshot.
 - Complete Chrome and Edge privacy questionnaires consistently with `privacy-declarations.md`.
 - Conduct security, legal/privacy, and merchant-terms review.
 
