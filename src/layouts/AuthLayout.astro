@@ -1,0 +1,4 @@
+---
+import '../styles/global.css'; import Logo from '../components/Logo.astro'; interface Props {title:string; lead:string;} const {title,lead}=Astro.props;
+---
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width"/><meta name="robots" content="noindex"/><title>{title} · HonorCart</title></head><body class="auth-page"><main class="auth-shell"><div class="auth-brand"><Logo/><div><p class="eyebrow light">Creator protection</p><h1>Know when your referrals were respected.</h1><p>Register your identifiers. See protection events. Understand exactly what the numbers mean.</p></div><a href="/transparency">Read our transparency standard →</a></div><div class="auth-card"><a class="back-link" href="/">← Back to HonorCart</a><h2>{title}</h2><p>{lead}</p><slot/></div></main></body></html>

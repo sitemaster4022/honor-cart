@@ -1,0 +1,4 @@
+---
+import SiteLayout from './SiteLayout.astro'; interface Props { title:string; description:string; updated?:string; } const {title,description,updated='August 29, 2026'}=Astro.props;
+---
+<SiteLayout title={title} description={description}><section class="legal-hero shell"><p class="eyebrow">Legal & trust</p><h1>{title}</h1><p>Last updated {updated}</p></section><article class="legal shell"><slot/></article></SiteLayout>
