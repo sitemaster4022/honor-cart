@@ -1,0 +1,4 @@
+---
+import AuthLayout from '../layouts/AuthLayout.astro';
+---
+<AuthLayout title="Welcome back" lead="Creator accounts are coming with the private beta."><form class="auth-form"><label>Email address<input type="email" placeholder="you@example.com" autocomplete="email" required/></label><label>Password<input type="password" placeholder="••••••••" autocomplete="current-password" required/></label><button class="button" type="button" data-demo-login>View demo dashboard</button><p class="form-note">Authentication is scaffolding only. This button opens a clearly labeled demo.</p></form><p class="auth-switch">New to HonorCart? <a href="/signup">Join the beta</a></p></AuthLayout><script>document.querySelector('[data-demo-login]')?.addEventListener('click',()=>location.href='/dashboard');</script>

@@ -1,6 +1,6 @@
 {
 	"name": "honor-cart",
-	"description": "Build a personal website, blog, or portfolio with Astro.",
+	"description": "HonorCart protects existing affiliate referrals while helping shoppers find coupons.",
 	"cloudflare": {
 		"label": "Astro Framework Starter",
 		"products": [

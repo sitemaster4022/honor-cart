@@ -1,0 +1,7 @@
+---
+import Logo from './Logo.astro';
+const path = Astro.url.pathname;
+const links = [['/how-it-works','How it works'],['/creators','For creators'],['/transparency','Transparency'],['/networks','Networks'],['/merchants','Merchants']];
+---
+<header class="site-header"><div class="nav-shell"><Logo /><nav aria-label="Main navigation">{links.map(([href,label]) => <a class:list={{active:path===href}} href={href}>{label}</a>)}</nav><div class="nav-actions"><a class="text-link" href="/login">Log in</a><a class="button button-small" href="/signup">Join the beta</a></div><button class="menu-button" aria-label="Open menu" aria-expanded="false">Menu</button></div><div class="mobile-menu" hidden>{links.map(([href,label]) => <a href={href}>{label}</a>)}<a href="/login">Log in</a><a href="/signup">Join the beta</a></div></header>
+<script>const button=document.querySelector('.menu-button');const menu=document.querySelector('.mobile-menu');button?.addEventListener('click',()=>{const open=menu?.hasAttribute('hidden');menu?.toggleAttribute('hidden',!open);button.setAttribute('aria-expanded',String(open));});</script>

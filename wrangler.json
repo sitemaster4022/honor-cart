@@ -1,14 +1,12 @@
 {
 	"name": "honor-cart",
-	"compatibility_date": "2025-10-08",
+	"compatibility_date": "2026-08-29",
 	"compatibility_flags": ["nodejs_compat"],
 	"main": "./dist/_worker.js/index.js",
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
-	"observability": {
-		"enabled": true
-	},
+	"observability": {"enabled":true,"logs":{"head_sampling_rate":1},"traces":{"enabled":true,"head_sampling_rate":0.01}},
 	"upload_source_maps": true
 }
