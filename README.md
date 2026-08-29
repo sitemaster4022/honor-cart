@@ -33,7 +33,7 @@ The ZIP is written to `artifacts/extension/honorcart-1.0.0.zip` with the manifes
 - The global and reviewer-merchant monetization switches are both off; `/v1/activate` rejects every request.
 - `/reviewer-store` returns the simulated, non-redeemable `HONOR10` coupon for store review.
 - Public trust, privacy, disclosure, support, and product routes are deployed at `https://honorcart.com`.
-- `/dashboard`, `/login`, and `/signup` are clearly labeled preview/scaffolding experiences.
+- `/signup` is a noindex beta-contact page; creator accounts and performance reporting are not live.
 - Every referral and monetary dashboard figure is sample data.
 - `/api/policy.json` returns a fail-safe policy with monetization disabled.
 - `/api/events` rejects telemetry until production controls are connected.

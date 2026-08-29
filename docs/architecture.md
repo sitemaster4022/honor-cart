@@ -34,4 +34,4 @@ Each future extension event should use a cryptographic UUID and contain only the
 - Protect event ingestion with extension attestation/signatures, replay protection, bounded schema validation, and rate limits.
 - Restrict production activation to approved extension origins after store IDs are assigned; treat CORS as a browser control, not authentication.
 - Complete legal review, retention periods, deletion/export flows, and subprocessor disclosures.
-- Replace demo dashboard data with creator-scoped queries and preserve every sample/estimate qualifier.
+- Build creator reporting only after real, creator-scoped event sources and metric qualifications are available.
