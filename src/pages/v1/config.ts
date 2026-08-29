@@ -4,7 +4,7 @@ import { globalMonetizationEnabled, merchants } from '../../lib/merchant-config'
 
 export const prerender = false;
 export const GET: APIRoute = () => json({
-  version: '1.1',
+  version: '1.2',
   globalMonetizationEnabled,
   merchants
 });

@@ -12,11 +12,9 @@
 		"publish": true
 	},
 	"dependencies": {
-		"@astrojs/cloudflare": "12.6.12",
-		"@astrojs/mdx": "4.3.13",
-		"@astrojs/rss": "4.0.14",
-		"@astrojs/sitemap": "3.6.1",
-		"astro": "5.16.9",
+		"@astrojs/cloudflare": "14.2.5",
+		"@astrojs/sitemap": "3.7.3",
+		"astro": "7.2.9",
 		"typescript": "5.9.3"
 	},
 	"devDependencies": {
@@ -31,6 +29,8 @@
 		"build": "astro build",
 		"cf-typegen": "wrangler types",
 		"check": "astro build && tsc && wrangler deploy --dry-run",
+		"package:extension": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/package-extension.ps1 -ApiBase https://honorcart.com -Version 1.0.0",
+		"test:extension": "node --test extension/test/rules.test.mjs",
 		"deploy": "wrangler deploy",
 		"dev": "astro dev",
 		"preview": "astro build && wrangler dev"

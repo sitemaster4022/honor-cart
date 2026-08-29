@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Set up HonorCart</title>
+  <link rel="stylesheet" href="onboarding.css">
+</head>
+<body>
+  <main>
+    <img src="icons/icon-128.png" width="88" height="88" alt="">
+    <h1>Coupons without silently replacing referrals</h1>
+    <p class="lead">HonorCart checks the current shopping address on your device for known affiliate signals. When one is detected, our monetization control is disabled for that session.</p>
+    <section>
+      <h2>Data used to provide the service</h2>
+      <ul>
+        <li><strong>On your device:</strong> the current page address is checked to identify supported merchants and referral parameters. Per-tab state disappears when the tab closes.</li>
+        <li><strong>Sent when you request coupons:</strong> the merchant hostname and path are sent to our service to retrieve available coupons.</li>
+        <li><strong>Sent when you explicitly activate:</strong> the merchant hostname and page address without its query string or fragment are sent to create an approved affiliate activation.</li>
+      </ul>
+      <p>We do not sell browsing data, use it for personalized advertising, or transmit a general browsing history. Coupon lookup and activation remain unavailable until you consent below.</p>
+    </section>
+    <section>
+      <h2>Affiliate disclosure</h2>
+      <p>When you deliberately select “Activate savings & support us,” we may earn a commission from an approved merchant at no added cost to you. Finding coupons alone does not claim affiliate attribution.</p>
+    </section>
+    <label class="consent"><input id="consent" type="checkbox"> I understand and consent to the data use described above.</label>
+    <button id="save" disabled>Enable coupon lookup</button>
+    <button id="disable" class="secondary">Disable and clear extension data</button>
+    <p id="result" role="status"></p>
+    <p><a href="https://honorcart.com/privacy" target="_blank" rel="noreferrer">Read the current public privacy policy</a> · <a href="https://honorcart.com/support" target="_blank" rel="noreferrer">Get support</a></p>
+  </main>
+  <script src="onboarding.js"></script>
+</body>
+</html>

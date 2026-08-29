@@ -6,6 +6,9 @@ export const prerender = false;
 export const GET: APIRoute = ({ url }) => {
   const hostname = url.searchParams.get('host') || '';
   const pathname = url.searchParams.get('path') || '/';
+  if (hostname.length > 253 || pathname.length > 2_048 || !pathname.startsWith('/')) {
+    return json({ error: 'invalid_request', coupons: [] }, 400);
+  }
   if (!matchesReviewerStore(hostname, pathname)) {
     return json({ error: 'unsupported_merchant', coupons: [] }, 404);
   }

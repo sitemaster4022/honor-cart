@@ -2,6 +2,8 @@
 
 The current site is deliberately fail-safe: `/api/policy.json` disables monetization and `/api/events` refuses telemetry until production authentication, D1, consent, retention, and privacy controls are connected.
 
+The versioned `extension` directory contains the current Manifest V3 client. It requests the allowlist from `/v1/config`, retrieves the reviewer coupon from `/v1/coupons` only after explicit user action, and cannot activate monetization while either approval switch is off. Referral processing and per-tab state remain local to the browser in this release.
+
 ## Data boundary
 
 The initial D1 migration models creators, hashed affiliate identifiers, network and merchant configuration, protected-referral events, and server-controlled flags. Affiliate identifiers should be normalized and keyed with a server-side HMAC before storage; plaintext identifiers and secret network credentials do not belong in event records.
@@ -30,5 +32,6 @@ Each future extension event should use a cryptographic UUID and contain only the
 - Run `wrangler types` after binding changes.
 - Choose an authentication provider and implement secure sessions, CSRF protection, rate limiting, and email verification.
 - Protect event ingestion with extension attestation/signatures, replay protection, bounded schema validation, and rate limits.
+- Restrict production activation to approved extension origins after store IDs are assigned; treat CORS as a browser control, not authentication.
 - Complete legal review, retention periods, deletion/export flows, and subprocessor disclosures.
 - Replace demo dashboard data with creator-scoped queries and preserve every sample/estimate qualifier.
