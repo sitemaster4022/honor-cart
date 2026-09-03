@@ -1,0 +1,36 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import PageHero from '../components/PageHero.astro';
+
+const choices = [
+  ['Same or nearly the same savings', 'HonorCart’s intended default is to preserve the detected creator or publisher referral. A tiny difference should not quietly erase the person who made the introduction.'],
+  ['A materially better discount is available', 'HonorCart aims to surface the stronger saving alongside its possible attribution effect. The shopper—not the extension—should decide whether the extra savings justify changing course.'],
+  ['The attribution effect is uncertain', 'HonorCart should say so and take the conservative path. It is better to stand down than to present an unsupported promise about affiliate credit.']
+];
+
+const faqs = [
+  ['Is HonorCart a Honey alternative that doesn’t overwrite affiliate links?', 'HonorCart is designed not to replace a detected, supported existing affiliate referral. Detection cannot cover every network or referral method, so HonorCart publishes its supported rules and defaults to standing down when the attribution state is uncertain. In the current private beta, affiliate activation is disabled entirely.'],
+  ['Does HonorCart work like Honey?', 'Both products belong to the broad category of shopping and coupon browser tools. HonorCart’s differentiator is its consumer-first attribution model: separate coupon lookup from affiliate activation, protect detected referrals by default, and make any future attribution tradeoff visible before the shopper acts.'],
+  ['Will HonorCart always choose the creator’s referral over a better coupon?', 'The planned experience preserves existing creator attribution when savings are equal or nearly equal. If another option is materially better, HonorCart aims to show both the savings and the possible attribution impact so the shopper can choose. That comparison experience is not active in the current beta.'],
+  ['What can the HonorCart beta do today?', 'The current build supports user-initiated coupon lookup on configured merchants and detects common affiliate-referral signals. When it detects one, it locks the session into a protected state. Monetization, affiliate activation, savings comparison, and production telemetry are disabled.']
+];
+---
+<SiteLayout title="A transparent Honey alternative" description="Looking for a Honey alternative? HonorCart is a transparent coupon extension designed to protect detected creator affiliate links and put meaningful savings choices in the shopper’s hands.">
+  <PageHero eyebrow="A consumer-first coupon extension" title="A transparent Honey alternative." lead="HonorCart is for shoppers who want help finding coupons without hiding what their choice may do to the creator, publisher, or affiliate who sent them.">
+    <div class="button-row"><a class="button" href="/signup">Join the private beta →</a><a class="button secondary" href="/transparency">Read the stand-down policy</a></div>
+  </PageHero>
+
+  <section class="section shell two-col seo-intro"><div><p class="eyebrow">Why look beyond the usual coupon tool?</p><h2>Saving money and respecting the introduction should not be hidden tradeoffs.</h2></div><div class="prose"><p>Someone searching for an alternative to Honey may still want the convenience of a coupon extension, but with a clearer account of whose affiliate credit is at stake. HonorCart separates coupon lookup from affiliate activation and treats attribution as information the shopper deserves to see.</p><p>Today’s private beta is deliberately limited: coupon lookup is user-initiated, detected referrals are protected, and HonorCart monetization is disabled. The broader comparison-and-choice experience described below is the product direction, not a claim about a currently active feature.</p></div></section>
+
+  <section class="section soft"><div class="shell"><div class="section-heading"><p class="eyebrow">The shopper-choice model</p><h2>Show the meaningful options. Explain the attribution effect.</h2><p>HonorCart is being designed to compare outcomes without treating every penny of difference as permission to take credit.</p></div><div class="choice-stack">{choices.map(([title, body], index) => <article class="choice-card"><span>{String(index + 1).padStart(2, '0')}</span><div><h3>{title}</h3><p>{body}</p></div></article>)}</div></div></section>
+
+  <section class="section shell"><div class="section-heading"><p class="eyebrow">What makes HonorCart different</p><h2>A coupon extension like Honey, built around visible consent.</h2></div><div class="three-grid"><article class="plain-card"><h3>Referral protection first</h3><p>Supported existing referral signals are checked before any monetized action. A protected session blocks HonorCart affiliate activation.</p></article><article class="plain-card"><h3>Material differences, not noise</h3><p>The intended comparison model treats equal or nearly equal savings differently from a genuinely stronger offer, with the threshold disclosed rather than hidden.</p></article><article class="plain-card"><h3>The shopper decides</h3><p>If a materially better saving could affect creator credit, HonorCart aims to explain both outcomes before the shopper chooses.</p></article></div></section>
+
+  <section class="policy-banner"><div class="shell"><b>Current beta status</b><p>Affiliate activation and savings comparison are disabled. HonorCart currently earns $0 from extension sessions.</p></div></section>
+
+  <section class="section shell"><div class="section-heading left"><p class="eyebrow">Questions shoppers ask</p><h2>HonorCart as an alternative to Honey</h2></div><div class="faq-list">{faqs.map(([question, answer]) => <details><summary>{question}</summary><p>{answer}</p></details>)}</div></section>
+
+  <section class="callout shell"><h2>Start with the policy, not the pitch.</h2><p>See exactly when HonorCart stands down, what the beta can do today, and where referral detection has limits.</p><a href="/transparency">Read the public transparency standard →</a></section>
+
+  <p class="shell trademark-note">Honey is a third-party product and trademark of its respective owner. HonorCart is independent and is not affiliated with or endorsed by Honey or its owner.</p>
+</SiteLayout>

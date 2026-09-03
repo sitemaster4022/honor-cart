@@ -8,7 +8,6 @@ import cloudflare from "@astrojs/cloudflare";
 export default defineConfig({
 	site: "https://honorcart.com",
 	integrations: [sitemap()],
-	session: false,
 	adapter: cloudflare({
 		imageService: "compile",
 	}),
