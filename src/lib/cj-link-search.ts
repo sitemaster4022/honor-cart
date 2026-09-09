@@ -28,6 +28,7 @@ export async function syncCjOffers(env: OffersEnvironment, mode: 'full' | 'incre
   let calls = 0;
 
   for (const promotionType of PROMOTION_TYPES) {
+    let promotionComplete = false;
     for (let page = 1; calls < MAX_CALLS; page += 1) {
       const url = new URL(CJ_ENDPOINT);
       url.searchParams.set('website-id', PID);
@@ -43,8 +44,13 @@ export async function syncCjOffers(env: OffersEnvironment, mode: 'full' | 'incre
       if (size > MAX_RESPONSE_BYTES) throw new Error('CJ Link Search response exceeded the safe size limit');
       const parsed = parseCjXml(await response.text());
       fetched.push(...parsed.records.filter((record) => record.advertiserId && record.linkId).map((record) => normalizeCjOffer(record, now)));
-      if (parsed.recordsReturned < PAGE_SIZE || page * PAGE_SIZE >= parsed.totalMatched) break;
+      if (parsed.recordsReturned < PAGE_SIZE || page * PAGE_SIZE >= parsed.totalMatched) {
+        promotionComplete = true;
+        break;
+      }
     }
+    // Never replace the stored snapshot with a silently truncated result set.
+    if (!promotionComplete) throw new Error('CJ Link Search result exceeded the per-run page budget');
   }
 
   const merged = mode === 'full' ? new Map<string, NormalizedOffer>() : new Map((previous?.offers || []).map((offer) => [offer.id, offer]));
