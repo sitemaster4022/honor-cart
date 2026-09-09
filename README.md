@@ -1,6 +1,6 @@
 # HonorCart
 
-HonorCart is a coupon browser extension designed to protect detected existing affiliate referrals. This repository contains the Chromium Manifest V3 extension, its store-review materials, and the Astro/Cloudflare website and API it uses.
+HonorCart is a coupon browser extension designed to protect detected existing affiliate referrals. This repository contains the Astro/Cloudflare website and public API.
 
 ## Local development
 
@@ -11,45 +11,31 @@ npm install
 npm run dev
 ```
 
-Run the production checks with:
+Run the production checks with `npm run check`, offer tests with `npm run test:offers`, and legacy extension tests with `npm run test:extension`.
 
-```sh
-npm run check
-npm run test:extension
-```
+## CJ offer ingestion
 
-Package the store ZIP with:
+The Worker pulls coupon, sale/discount, and free-shipping links for joined CJ advertisers using promotional property/PID `101876786`. It stores one sanitized-query source snapshot in the `OFFERS` KV binding. Incremental syncs run every six hours using CJ's `last-updated` parameter with a one-day overlap; a weekly full sync removes links CJ no longer returns. Expired, not-yet-active, and stale undated offers are excluded from public recommendations.
 
-```powershell
-npm run package:extension
-```
+The public endpoint is `GET /api/offers?domain=unice.com`. It never returns the CJ PAT or the stored CJ tracking URL. Coupon lookup and coupon testing remain separate from affiliate activation and attribution decisions.
 
-The ZIP is written to `artifacts/extension/honorcart-1.0.0.zip` with the manifest at its root. Extension artifacts are kept outside the website deployment directory.
+### One-time production setup
+
+After the GitHub-connected deployment creates or updates the `honor-cart` Worker, open Cloudflare Dashboard → Workers & Pages → `honor-cart` → Settings → Variables and Secrets → Add. Create an encrypted **Secret** named `CJ_PAT`, paste the CJ Personal Access Token there, and deploy the saved secret. Do not add the token to GitHub, Wrangler configuration, extension files, logs, or chat.
+
+The GitHub deployment uses Wrangler's automatic provisioning for the `OFFERS` KV binding and applies the cron triggers from `wrangler.json`; no manual export or direct Wrangler deployment is required.
 
 ## Current product state
 
-- The extension requires first-run consent and maintains referral state per tab.
-- Coupon lookup occurs only after the shopper opens the popup and selects **Find coupons**.
-- The global and reviewer-merchant monetization switches are both off; `/v1/activate` rejects every request.
-- `/reviewer-store` returns the simulated, non-redeemable `HONOR10` coupon for store review.
-- Public trust, privacy, disclosure, support, and product routes are deployed at `https://honorcart.com`.
-- `/signup` is a noindex beta-contact page; creator accounts and performance reporting are not live.
-- Every referral and monetary dashboard figure is sample data.
-- `/api/policy.json` returns a fail-safe policy with monetization disabled.
-- `/api/events` rejects telemetry until production controls are connected.
-- `migrations/0001_creator_dashboard_foundation.sql` defines the future D1 model.
+- Referral detection and monetization controls remain fail-closed.
+- Global monetization and merchant activation remain disabled.
+- The reviewer store continues to expose its simulated `HONOR10` coupon.
+- UNice is recognized for CJ-backed coupon lookup; live DOM testing remains disabled until its selectors are validated (documented in the extension repository).
+- `/api/events` still rejects telemetry until production authentication and privacy controls are connected.
 
-## Extension review
-
-1. Load the `extension` directory as an unpacked extension.
-2. Complete the disclosure and consent screen.
-3. Open `https://honorcart.com/reviewer-store` and retrieve `HONOR10`.
-4. Open `https://honorcart.com/reviewer-store?afsrc=1` in a new tab and confirm that the popup reports **Existing referral protected**.
-
-Submission copy, privacy questionnaire answers, reviewer instructions, assets, and the owner checklist are in `docs/store`.
-
-See [docs/architecture.md](docs/architecture.md) for data boundaries, metric definitions, the extension decision order, and the production activation checklist.
+See `docs/architecture.md` for data boundaries, metric definitions, extension decision order, and the production activation checklist.
 
 ## Deployment
 
-The existing Cloudflare Workers adapter and Wrangler configuration are preserved. Provision D1 before activating account or event ingestion, add its binding to `wrangler.json`, and regenerate `worker-configuration.d.ts` with `npm run cf-typegen`.
+The existing GitHub-connected Cloudflare deployment remains the deployment path. The Worker uses a custom Astro entrypoint only to add scheduled CJ sync handling; normal HTTP requests continue through Astro's official Cloudflare handler.
+
