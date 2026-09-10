@@ -51,6 +51,20 @@ test('extracts only explicitly introduced coupon codes from N/A promotions', () 
   assert.equal(extractCouponCode('Summer Hair Collection'), null);
 });
 
+test('normalizes explicit mixed-case alphabetic coupon codes to uppercase', () => {
+  assert.equal(extractCouponCode('Up To $60 Off With Code: Brand!'), 'BRAND');
+  assert.equal(extractCouponCode('Code: Tax'), 'TAX');
+  assert.equal(extractCouponCode('Use Code Graduation'), 'GRADUATION');
+  assert.equal(extractCouponCode('Promo Code: Summer'), 'SUMMER');
+  assert.equal(normalizeCjOffer(cjRecord({ linkName: 'Up To $60 Off With Code: Brand!' }), now).couponCode, 'BRAND');
+});
+
+test('does not extract alphabetic words without an explicit code-introducing phrase', () => {
+  assert.equal(extractCouponCode('Brand summer graduation sale'), null);
+  assert.equal(extractCouponCode('Save on tax preparation today'), null);
+  assert.equal(extractCouponCode('Use code for checkout savings'), null);
+});
+
 test('rejects logo and generic non-promotional creatives', () => {
   assert.equal(isCredibleCjPromotion(cjRecord({ linkName: '150x40 Logo' })), false);
   assert.equal(isCredibleCjPromotion(cjRecord({ linkName: 'UNice Human Hair Wigs' })), false);
@@ -69,6 +83,44 @@ test('stale undated CJ records are not refreshed by being observed again', () =>
   assert.notEqual(first.observedAt, observedAgain.observedAt);
   assert.equal(first.active, false);
   assert.equal(observedAgain.active, false);
+});
+
+test('old source metadata with an ordinary future end date remains normally trusted', () => {
+  const offer = normalizeCjOffer(cjRecord({
+    linkName: 'Save 40% Off', promotionStartDate: '2023-01-01T00:00:00Z',
+    promotionEndDate: '2026-10-15T00:00:00Z', lastUpdated: '2023-06-01T00:00:00Z'
+  }), new Date('2026-09-10T12:00:00Z'));
+  assert.equal(offer.active, true);
+  assert.equal(offer.eligibilityConfidence, 'high');
+  assert.equal(offer.requiresLiveVerification, true);
+});
+
+test('old source metadata with an extremely distant expiration lowers confidence without inventing expiry', () => {
+  const offer = normalizeCjOffer(cjRecord({
+    linkName: 'Save 40% Off', promotionStartDate: '2023-01-01T00:00:00Z',
+    promotionEndDate: '2033-01-01T00:00:00Z', lastUpdated: '2023-06-01T00:00:00Z'
+  }), new Date('2026-09-10T12:00:00Z'));
+  assert.equal(offer.active, true);
+  assert.equal(offer.endDate, '2033-01-01T00:00:00.000Z');
+  assert.equal(offer.eligibilityConfidence, 'low');
+  assert.equal(offer.requiresLiveVerification, true);
+});
+
+test('recent source metadata preserves confidence for a distant explicit expiration', () => {
+  const offer = normalizeCjOffer(cjRecord({
+    linkName: 'Save 40% Off', promotionStartDate: '2026-09-01T00:00:00Z',
+    promotionEndDate: '2033-01-01T00:00:00Z', lastUpdated: '2026-09-09T00:00:00Z'
+  }), new Date('2026-09-10T12:00:00Z'));
+  assert.equal(offer.active, true);
+  assert.equal(offer.eligibilityConfidence, 'high');
+});
+
+test('an explicitly expired promotion remains inactive', () => {
+  const offer = normalizeCjOffer(cjRecord({
+    linkName: 'Save 40% Off', promotionStartDate: '2026-08-01T00:00:00Z',
+    promotionEndDate: '2026-09-01T00:00:00Z', lastUpdated: '2026-08-31T00:00:00Z'
+  }), new Date('2026-09-10T12:00:00Z'));
+  assert.equal(offer.active, false);
 });
 
 class SyncKv {

@@ -57,7 +57,9 @@ const PROMOTION_SIGNALS = [
   /\b(?:now|only|starting\s+at|from)\s+\$\s*\d+(?:\.\d{1,2})?\b/i,
   /\b(?:discount|price\s+drop|marked\s+down|reduced\s+price|special\s+price|limited-time\s+deal)\b/i
 ];
-const CODE_STOPWORDS = new Set(['AT', 'FOR', 'IS', 'NOW', 'ON', 'THE', 'TO', 'TODAY', 'YOUR']);
+const CODE_STOPWORDS = new Set(['AND', 'AT', 'FOR', 'IS', 'NOW', 'ON', 'ONLY', 'OR', 'THE', 'THIS', 'TO', 'TODAY', 'VALID', 'WHEN', 'WHERE', 'YOUR']);
+const STALE_SOURCE_AGE_MS = 365 * 24 * 60 * 60 * 1000;
+const DISTANT_EXPIRATION_MS = 3 * 365 * 24 * 60 * 60 * 1000;
 
 export function normalizeDomain(value: string): string | null {
   const candidate = value.trim().toLowerCase();
@@ -104,7 +106,7 @@ export function extractCouponCode(text: string): string | null {
     if (!candidate) continue;
     const upper = candidate.toUpperCase();
     if (CODE_STOPWORDS.has(upper) || /^\d+$/.test(candidate)) continue;
-    if (/\d/.test(candidate) || candidate === upper) return candidate;
+    return upper;
   }
   return null;
 }
@@ -141,6 +143,9 @@ export function normalizeCjOffer(record: CjLinkRecord, syncedAt: Date): Normaliz
   const ambiguous = AMBIGUOUS.test(description);
   const observedAt = syncedAt.toISOString();
   const sourceUpdatedAt = parseDate(record.lastUpdated);
+  const startDate = parseDate(record.promotionStartDate);
+  const endDate = parseDate(record.promotionEndDate);
+  const suspiciousValidityWindow = hasStaleSourceWithDistantExpiration(sourceUpdatedAt, endDate, syncedAt);
   const offer: NormalizedOffer = {
     id: `cj:${record.advertiserId}:${record.linkId}`,
     advertiserId: record.advertiserId,
@@ -151,21 +156,30 @@ export function normalizeCjOffer(record: CjLinkRecord, syncedAt: Date): Normaliz
     promotionType: record.promotionType.trim().toLowerCase() || 'unknown',
     minimumSpend,
     currency: minimumSpend === null ? null : 'USD',
-    startDate: parseDate(record.promotionStartDate),
-    endDate: parseDate(record.promotionEndDate),
+    startDate,
+    endDate,
     destinationUrl,
     cjTrackingUrl: trackingUrl,
     source: 'cj',
     sourceUpdatedAt,
     observedAt,
     lastUpdatedAt: observedAt,
-    eligibilityConfidence: ambiguous ? 'low' : minimumSpend !== null ? 'medium' : 'high',
+    eligibilityConfidence: suspiciousValidityWindow || ambiguous ? 'low' : minimumSpend !== null ? 'medium' : 'high',
     requiresLiveVerification: true,
     freeGift: { present: freeGiftPresent, description: freeGiftPresent ? description : null },
     active: true
   };
   offer.active = isOfferActive(offer, syncedAt);
   return offer;
+}
+
+function hasStaleSourceWithDistantExpiration(sourceUpdatedAt: string | null, endDate: string | null, now: Date): boolean {
+  if (!sourceUpdatedAt || !endDate) return false;
+  const current = now.getTime();
+  const sourceUpdated = Date.parse(sourceUpdatedAt);
+  const expiration = Date.parse(endDate);
+  if (!Number.isFinite(sourceUpdated) || !Number.isFinite(expiration)) return false;
+  return current - sourceUpdated > STALE_SOURCE_AGE_MS && expiration - current > DISTANT_EXPIRATION_MS;
 }
 
 export function publicOffer(offer: NormalizedOffer) {
