@@ -1,5 +1,5 @@
 import { handle } from '@astrojs/cloudflare/handler';
-import { syncCjOffers } from './lib/cj-link-search';
+import { describeCjSyncError, syncCjOffers } from './lib/cj-link-search';
 
 export default {
   fetch(request, env, ctx) {
@@ -10,7 +10,7 @@ export default {
     try {
       await syncCjOffers(env, mode);
     } catch (error) {
-      console.error(JSON.stringify({ event: 'cj_offer_sync_failed', mode, message: error instanceof Error ? error.message : 'Unknown error' }));
+      console.error(JSON.stringify({ event: 'cj_offer_sync_failed', mode, ...describeCjSyncError(error) }));
       throw error;
     }
   }
