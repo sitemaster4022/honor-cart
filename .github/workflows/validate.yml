@@ -27,7 +27,7 @@ jobs:
       - name: Coupon bridge regression tests
         run: node --test test/coupons.test.mjs
       - name: TypeScript checks
-        run: npx tsc --noEmit
+        run: npx astro sync && npx tsc --noEmit
       - name: Astro production build
         run: npm run build
       - name: Full project check
