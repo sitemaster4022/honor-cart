@@ -1,6 +1,6 @@
-import { json } from './api-response';
-import { findCjCouponMerchant, matchesReviewerStore, type CjCouponMerchant } from './merchant-config';
-import { isOfferActive, normalizeDomain, type NormalizedOffer } from './offers';
+import { json } from './api-response.ts';
+import { findCjCouponMerchant, matchesReviewerStore, type CjCouponMerchant } from './merchant-config.ts';
+import { isOfferActive, normalizeDomain, type NormalizedOffer } from './offers.ts';
 
 interface OfferSnapshot {
   offers: NormalizedOffer[];

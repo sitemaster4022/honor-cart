@@ -1,4 +1,4 @@
-import { normalizeDomain } from './offers';
+import { normalizeDomain } from './offers.ts';
 
 export const globalMonetizationEnabled = false;
 
