@@ -26,6 +26,7 @@
     "package:extension": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/package-extension.ps1 -ApiBase https://honorcart.com -Version 1.0.0",
     "test:extension": "node --test extension/test/rules.test.mjs",
     "test:offers": "node --test test/offers.test.mjs",
+    "test:manual-sync": "node --test test/manual-cj-sync.test.mjs",
     "deploy": "wrangler deploy",
     "dev": "astro dev",
     "preview": "astro build && wrangler dev"
