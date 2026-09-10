@@ -1,0 +1,38 @@
+name: Validate
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Existing test suite
+        run: |
+          npm run test:extension
+          npm run test:offers
+          npm run test:manual-sync
+      - name: Coupon bridge regression tests
+        run: node --test test/coupons.test.mjs
+      - name: TypeScript checks
+        run: npx astro sync && npx tsc --noEmit
+      - name: Astro production build
+        run: npm run build
+      - name: Full project check
+        run: npm run check
+      - name: Wrangler bundle dry-run
+        run: npx wrangler deploy --dry-run
+      - name: Whitespace validation
+        run: git diff --check "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"

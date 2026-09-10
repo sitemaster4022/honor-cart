@@ -1,3 +1,5 @@
+import { normalizeDomain } from './offers.ts';
+
 export const globalMonetizationEnabled = false;
 
 export const merchants = [
@@ -28,3 +30,14 @@ export function matchesReviewerStore(hostname: string, pathname: string) {
     merchant.pathPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
+export function findCjCouponMerchant(hostname: string) {
+  const normalizedHost = normalizeDomain(hostname);
+  if (!normalizedHost) return undefined;
+  return merchants.find((merchant) =>
+    merchant.couponSupport &&
+    merchant.affiliateNetwork === 'cj' &&
+    merchant.domains.some((domain) => normalizedHost === domain || normalizedHost.endsWith(`.${domain}`))
+  );
+}
+
+export type CjCouponMerchant = NonNullable<ReturnType<typeof findCjCouponMerchant>>;
