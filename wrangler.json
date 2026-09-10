@@ -2,35 +2,13 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "honor-cart",
   "compatibility_date": "2026-09-04",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
+  "compatibility_flags": ["nodejs_compat"],
   "main": "./src/worker.ts",
-  "assets": {
-    "directory": "./dist",
-    "binding": "ASSETS"
-  },
-  "kv_namespaces": [
-    {
-      "binding": "OFFERS"
-    }
-  ],
-  "triggers": {
-    "crons": [
-      "0 */6 * * *",
-      "15 3 * * SUN"
-    ]
-  },
-  "observability": {
-    "enabled": true,
-    "head_sampling_rate": 0.1
-  },
+  "assets": { "directory": "./dist", "binding": "ASSETS" },
+  "kv_namespaces": [{ "binding": "OFFERS" }],
+  "triggers": { "crons": ["0 */6 * * *", "15 3 * * SUN"] },
+  "observability": { "enabled": true, "head_sampling_rate": 0.1 },
   "upload_source_maps": true,
   "keep_vars": true,
-  "secrets": {
-    "required": [
-      "CJ_PAT",
-      "HONORCART_SYNC_ADMIN_TOKEN"
-    ]
-  }
+  "secrets": { "required": ["CJ_PAT", "HONORCART_SYNC_ADMIN_TOKEN"] }
 }
