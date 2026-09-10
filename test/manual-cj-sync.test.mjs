@@ -8,13 +8,15 @@ const cjPat = 'local-test-cj-pat';
 
 class FakeKv {
   values = new Map();
+  puts = [];
 
   async get(key, type) {
     const value = this.values.get(key) ?? null;
     return type === 'json' && value ? JSON.parse(value) : value;
   }
 
-  async put(key, value) {
+  async put(key, value, options) {
+    this.puts.push({ key, value, options });
     this.values.set(key, value);
   }
 }
@@ -69,6 +71,19 @@ test('full mode calls the production sync dependency', async () => {
   const result = await handleManualCjSync(request(adminToken, { mode: 'full' }), env(), successfulSync(calls));
   assert.equal(result.status, 200);
   assert.deepEqual(calls, ['full']);
+});
+
+test('manual sync keeps a 30-second cooldown while using a KV-compatible storage TTL', async (t) => {
+  const startedAt = 1_789_000_000_000;
+  t.mock.method(Date, 'now', () => startedAt);
+  const runtime = env();
+  const result = await handleManualCjSync(request(adminToken), runtime, successfulSync([]));
+  const rateLimitWrite = runtime.OFFERS.puts.find(({ key }) => key === 'admin:cj-sync:rate-limit:v1');
+
+  assert.equal(result.status, 200);
+  assert.ok(rateLimitWrite);
+  assert.equal(Number(rateLimitWrite.value), startedAt + 30_000);
+  assert.ok(rateLimitWrite.options.expirationTtl >= 60);
 });
 
 test('successful response is sanitized and confirms the public snapshot', async () => {

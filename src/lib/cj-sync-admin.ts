@@ -25,6 +25,7 @@ type SyncFunction = (env: ManualSyncEnvironment, mode: CjSyncMode) => Promise<Cj
 
 const RATE_LIMIT_KEY = 'admin:cj-sync:rate-limit:v1';
 const RATE_LIMIT_SECONDS = 30;
+const RATE_LIMIT_STORAGE_TTL_SECONDS = 60;
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store', 'Content-Type': 'application/json; charset=utf-8' };
 
 export async function handleManualCjSync(
@@ -69,7 +70,7 @@ export async function handleManualCjSync(
       const retryAfter = Math.max(1, Math.ceil((limitedUntil - startedAt) / 1000));
       return response({ ok: false, error: { category: 'rate_limited', message: 'A manual sync was triggered recently' }, retryAfter }, 429, { 'Retry-After': String(retryAfter) });
     }
-    await env.OFFERS.put(RATE_LIMIT_KEY, String(startedAt + RATE_LIMIT_SECONDS * 1000), { expirationTtl: RATE_LIMIT_SECONDS });
+    await env.OFFERS.put(RATE_LIMIT_KEY, String(startedAt + RATE_LIMIT_SECONDS * 1000), { expirationTtl: RATE_LIMIT_STORAGE_TTL_SECONDS });
   } catch {
     return syncFailure(new CjSyncError('kv_binding_failure', 'Unable to apply manual sync rate limiting'), mode, startedAt);
   }
