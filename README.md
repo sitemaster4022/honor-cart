@@ -15,7 +15,7 @@ Run the production checks with `npm run check`, offer tests with `npm run test:o
 
 ## CJ offer ingestion
 
-The Worker pulls coupon, sale/discount, and free-shipping links for joined CJ advertisers using promotional property/PID `101876786`. It stores one sanitized-query source snapshot in the `OFFERS` KV binding. Incremental syncs run every six hours using CJ's `last-updated` parameter with a one-day overlap; a weekly full sync removes links CJ no longer returns. Expired, not-yet-active, and stale undated offers are excluded from public recommendations.
+The Worker pulls the complete joined-advertiser Link Search inventory using promotional property/PID `101876786`, then conservatively classifies promotional links from CJ metadata and offer language. This includes credible promotions whose CJ `promotion-type` is `N/A`, while excluding generic logos, banners, navigation links, and records without meaningful offer language. It stores one sanitized-query source snapshot in the `OFFERS` KV binding. Incremental syncs run every six hours using CJ's `last-updated` parameter with a one-day overlap; a weekly full sync removes links CJ no longer returns. Explicit start/end dates remain authoritative, and undated offers use CJ's source-update timestamp rather than the latest HonorCart observation time so repeated syncs cannot make old promotions indefinitely fresh.
 
 The public endpoint is `GET /api/offers?domain=unice.com`. It never returns the CJ PAT or the stored CJ tracking URL. Coupon lookup and coupon testing remain separate from affiliate activation and attribution decisions.
 
