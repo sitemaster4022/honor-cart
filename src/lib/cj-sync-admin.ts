@@ -7,6 +7,7 @@ import {
   type CjSyncResult
 } from './cj-link-search.ts';
 import type { NormalizedOffer } from './offers.ts';
+import { checkAdminAuthorization } from './admin-auth.ts';
 
 interface ManualSyncEnvironment {
   CJ_PAT?: string;
@@ -37,13 +38,13 @@ export async function handleManualCjSync(
     return response({ ok: false, error: { category: 'method_not_allowed', message: 'Only POST is allowed' } }, 405, { Allow: 'POST' });
   }
 
-  const configuredToken = env.HONORCART_SYNC_ADMIN_TOKEN || '';
-  const suppliedToken = bearerToken(request.headers.get('Authorization'));
-  if (!configuredToken) {
-    return response({ ok: false, error: { category: 'admin_auth_not_configured', message: 'Manual sync authentication is not configured' } }, 503);
-  }
-  if (!suppliedToken || !constantTimeEqual(suppliedToken, configuredToken)) {
-    return response({ ok: false, error: { category: 'unauthorized', message: 'Invalid or missing bearer token' } }, 401, { 'WWW-Authenticate': 'Bearer' });
+  const authorization = checkAdminAuthorization(request, env.HONORCART_SYNC_ADMIN_TOKEN);
+  if (!authorization.ok) {
+    return response(
+      { ok: false, error: { category: authorization.category, message: authorization.message } },
+      authorization.status,
+      authorization.headers || {}
+    );
   }
 
   let mode: CjSyncMode = 'incremental';
@@ -111,20 +112,6 @@ function syncFailure(error: unknown, mode: CjSyncMode, startedAt: number): Respo
   console.error(JSON.stringify({ event: 'cj_manual_sync_failed', mode, ...safe, durationMs: Date.now() - startedAt }));
   const status = safe.category === 'cj_rate_limited' ? 502 : safe.category === 'missing_cj_pat' || safe.category === 'kv_binding_failure' ? 503 : 502;
   return response({ ok: false, mode, error: safe, durationMs: Date.now() - startedAt }, status);
-}
-
-function bearerToken(header: string | null): string | null {
-  const match = header?.match(/^Bearer\s+(.+)$/i);
-  return match?.[1].trim() || null;
-}
-
-function constantTimeEqual(left: string, right: string): boolean {
-  const a = new TextEncoder().encode(left);
-  const b = new TextEncoder().encode(right);
-  let mismatch = a.length ^ b.length;
-  const length = Math.max(a.length, b.length);
-  for (let index = 0; index < length; index += 1) mismatch |= (a[index] || 0) ^ (b[index] || 0);
-  return mismatch === 0;
 }
 
 function response(body: unknown, status = 200, headers: Record<string, string> = {}): Response {

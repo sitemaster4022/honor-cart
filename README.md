@@ -55,7 +55,7 @@ The endpoint accepts only authenticated `POST` requests, applies a short cooldow
 - Referral detection and monetization controls remain fail-closed.
 - Global monetization and merchant activation remain disabled.
 - The reviewer store continues to expose its simulated `HONOR10` coupon.
-- UNice is recognized for CJ-backed coupon lookup; live DOM testing remains disabled until its selectors are validated (documented in the extension repository).
+- UNice is recognized for CJ-backed coupon lookup and is tracked as live_validated in the internal merchant readiness registry; release enablement remains a separate stage.
 - `/api/events` still rejects telemetry until production authentication and privacy controls are connected.
 
 See `docs/architecture.md` for data boundaries, metric definitions, extension decision order, and the production activation checklist.
@@ -64,3 +64,39 @@ See `docs/architecture.md` for data boundaries, metric definitions, extension de
 
 The existing GitHub-connected Cloudflare deployment remains the deployment path. The Worker uses a custom Astro entrypoint only to add scheduled CJ sync handling; normal HTTP requests continue through Astro's official Cloudflare handler.
 
+
+
+### Protected merchant inventory report
+
+The protected GET /api/admin/merchant-inventory endpoint aggregates the live snapshot:v1 CJ inventory by advertiserId. It reports observed domains, current activity, active coded records, case-insensitive unique coupon codes, confidence buckets, CJ source freshness, supported-merchant configuration, and readiness stage. It does not return CJ tracking URLs, CJ credentials, or admin secrets.
+
+Merchant readiness is explicit and conservative: unknown CJ advertisers default to inventory_only. The registry currently records UNice as live_validated; that status is intentionally distinct from enabled, and no additional merchants are enabled by the report.
+
+The response includes recommendedNextMerchants, ranked by this transparent sequence:
+
+1. unique currently testable coupon codes, descending
+2. high-confidence coded records, descending
+3. medium-confidence coded records, descending
+4. most recent coded CJ source update, descending
+5. resolved primary domain first
+6. advertiser ID ascending as the final tie-breaker
+
+live_validated and enabled merchants are excluded from recommendations. Use domain and advertiserId query filters to inspect one merchant without placing credentials in the URL.
+
+Query the report with the existing protected admin token:
+
+~~~powershell
+$headers = @{
+  Authorization = "Bearer $env:HONORCART_SYNC_ADMIN_TOKEN"
+}
+
+Invoke-RestMethod -Uri "https://honorcart.com/api/admin/merchant-inventory" -Headers $headers
+~~~
+
+For a focused lookup:
+
+~~~powershell
+Invoke-RestMethod -Uri "https://honorcart.com/api/admin/merchant-inventory?domain=unice.com" -Headers $headers
+~~~
+
+No new merchant should be enabled until its adapter and live checkout behavior have been separately validated.
