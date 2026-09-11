@@ -24,6 +24,7 @@ jobs:
           npm run test:extension
           npm run test:offers
           npm run test:manual-sync
+          npm run test:merchant-inventory
       - name: Coupon bridge regression tests
         run: node --test test/coupons.test.mjs
       - name: TypeScript checks

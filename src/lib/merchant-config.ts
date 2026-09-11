@@ -5,6 +5,7 @@ export const globalMonetizationEnabled = false;
 export const merchants = [
   {
     id: 'honorcart-reviewer-store',
+    advertiserId: null,
     displayName: 'HonorCart Reviewer Store',
     domains: ['honorcart.com'],
     pathPrefixes: ['/reviewer-store'],
@@ -14,6 +15,7 @@ export const merchants = [
   },
   {
     id: 'unice',
+    advertiserId: '5824323',
     displayName: 'UNice',
     domains: ['unice.com'],
     pathPrefixes: [],

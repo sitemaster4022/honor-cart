@@ -27,6 +27,7 @@
     "test:extension": "node --test extension/test/rules.test.mjs",
     "test:offers": "node --test test/offers.test.mjs",
     "test:manual-sync": "node --test test/manual-cj-sync.test.mjs",
+    "test:merchant-inventory": "node --test test/merchant-inventory.test.mjs",
     "deploy": "wrangler deploy",
     "dev": "astro dev",
     "preview": "astro build && wrangler dev"
