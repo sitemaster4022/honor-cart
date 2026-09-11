@@ -86,7 +86,7 @@ test('uses current activity rules instead of the stored active flag', () => {
   const merchant = report.merchants.find((candidate) => candidate.advertiserId === '100');
   assert.equal(merchant.totalSnapshotRecords, 4);
   assert.equal(merchant.currentlyActiveRecords, 1);
-  assert.equal(merchant.uniqueCouponCodes, ['SAVE20']);
+  assert.deepEqual(merchant.uniqueCouponCodes, ['SAVE20']);
 });
 
 test('counts usable codes case-insensitively and keeps no-code promotions separate', () => {

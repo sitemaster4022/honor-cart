@@ -262,7 +262,7 @@ function choosePrimaryDomain(activeDomains: string[]): string | null {
   for (const domain of activeDomains) counts.set(domain, (counts.get(domain) || 0) + 1);
 
   const candidates = activeDomains.filter(
-    (domain) => !activeDomains.some((other) => other !== domain && other.endsWith('.' + domain))
+    (domain) => !activeDomains.some((other) => other !== domain && domain.endsWith('.' + other))
   );
 
   return [...new Set(candidates)].sort((left, right) => {
